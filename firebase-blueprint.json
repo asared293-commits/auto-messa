@@ -1,0 +1,120 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "createdAt"]
+    },
+    "Template": {
+      "title": "Template",
+      "description": "A saved message template.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "content": { "type": "string" },
+        "variables": { "type": "array" },
+        "mediaUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "lastUsedAt": { "type": "string", "format": "date-time" },
+        "usageCount": { "type": "number" }
+      },
+      "required": ["userId", "name", "content", "createdAt"]
+    },
+    "Campaign": {
+      "title": "Campaign",
+      "description": "A structured messaging campaign.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "templateId": { "type": "string" },
+        "templateName": { "type": "string" },
+        "recipientJid": { "type": "string" },
+        "recipientName": { "type": "string" },
+        "phoneNumber": { "type": "string" },
+        "scheduleTime": { "type": "string" },
+        "repeatType": { "type": "string" },
+        "repeatDays": { "type": "array" },
+        "status": { "type": "string", "enum": ["active", "paused", "completed"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "name", "recipientJid", "status", "createdAt"]
+    },
+    "Schedule": {
+      "title": "Schedule",
+      "description": "Scheduled execution entry.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "recipientJid": { "type": "string" },
+        "recipientName": { "type": "string" },
+        "phoneNumber": { "type": "string" },
+        "message": { "type": "string" },
+        "templateId": { "type": "string" },
+        "templateName": { "type": "string" },
+        "scheduledAt": { "type": "string", "format": "date-time" },
+        "timezone": { "type": "string" },
+        "repeatType": { "type": "string" },
+        "repeatDays": { "type": "array" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "status": { "type": "string", "enum": ["scheduled", "sending", "sent", "failed", "cancelled", "paused"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "sentAt": { "type": "string", "format": "date-time" },
+        "errorMessage": { "type": "string" }
+      },
+      "required": ["userId", "recipientJid", "message", "scheduledAt", "status", "createdAt"]
+    },
+    "MessageLog": {
+      "title": "MessageLog",
+      "description": "Log of sent or failed messages.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "message": { "type": "string" },
+        "recipientJid": { "type": "string" },
+        "recipientName": { "type": "string" },
+        "phoneNumber": { "type": "string" },
+        "templateName": { "type": "string" },
+        "sentAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["sent", "failed"] },
+        "errorMessage": { "type": "string" },
+        "scheduleId": { "type": "string" }
+      },
+      "required": ["userId", "message", "recipientJid", "sentAt", "status"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Profiles tied to Firebase Auth UID"
+    },
+    "templates/{templateId}": {
+      "schema": { "$ref": "#/entities/Template" },
+      "description": "User message templates"
+    },
+    "campaigns/{campaignId}": {
+      "schema": { "$ref": "#/entities/Campaign" },
+      "description": "User messaging campaigns"
+    },
+    "schedules/{scheduleId}": {
+      "schema": { "$ref": "#/entities/Schedule" },
+      "description": "Individual scheduled sends"
+    },
+    "history/{historyId}": {
+      "schema": { "$ref": "#/entities/MessageLog" },
+      "description": "Message execution history log"
+    }
+  }
+}

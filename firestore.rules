@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    match /users/{userId} {
+      allow get, update, delete: if isOwner(userId);
+      allow create: if isOwner(userId) && incoming().keys().hasAll(['email', 'createdAt']);
+    }
+
+    match /templates/{templateId} {
+      allow get, update, delete: if isSignedIn() && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid 
+        && incoming().keys().hasAll(['userId', 'name', 'content', 'createdAt']);
+    }
+
+    match /campaigns/{campaignId} {
+      allow get, update, delete: if isSignedIn() && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+    }
+
+    match /schedules/{scheduleId} {
+      allow get, update, delete: if isSignedIn() && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+    }
+
+    match /history/{historyId} {
+      allow get, update, delete: if isSignedIn() && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+    }
+  }
+}

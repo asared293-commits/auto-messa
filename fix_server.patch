@@ -1,0 +1,30 @@
+--- server.ts
++++ server.ts
+@@ -561,11 +561,24 @@
+ 
+       let contents: any = promptText;
+       if (imageData) {
+-        const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
++        let base64Data = "";
++        let mime = "image/png";
++        if (imageData.startsWith("/uploads/")) {
++          const filePath = path.join(process.cwd(), imageData);
++          if (fs.existsSync(filePath)) {
++            const ext = path.extname(filePath).toLowerCase();
++            if (ext === ".jpg" || ext === ".jpeg") mime = "image/jpeg";
++            else if (ext === ".webp") mime = "image/webp";
++            base64Data = fs.readFileSync(filePath).toString("base64");
++          } else {
++            throw new Error("Attached media file not found on server.");
++          }
++        } else {
++          base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
++        }
+         contents = [
+           promptText,
+           {
+             inlineData: {
+-              mimeType: "image/png",
++              mimeType: mime,
+               data: base64Data
+             }

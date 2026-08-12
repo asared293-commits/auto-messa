@@ -1,0 +1,8 @@
+{
+  "name": "Remix automessa",
+  "description": "Automatic WhatsApp Message Sender with AI generation, template management, scheduling, and campaigns.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
